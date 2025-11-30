@@ -84,7 +84,7 @@ const PERSONAL_DATA = {
   hobbies: [
     { icon: Gamepad2, label: "Gaming", desc: "RPG & Strategy" },
     { icon: Music, label: "Music", desc: "Lo-fi & Synthwave" },
-    { icon: Camera, label: "Photography", desc: "Urban & Street" },
+    { icon: Camera, label: "Photography", desc: "Urban & Street", link: "http://instagram.com/stories/highlights/18143518057383699/" },
     { icon: Coffee, label: "Coffee", desc: "Pour-over" }
   ],
   socials: [
