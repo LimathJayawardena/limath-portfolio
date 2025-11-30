@@ -84,6 +84,7 @@ const PERSONAL_DATA = {
   hobbies: [
     { icon: Gamepad2, label: "Gaming", desc: "RPG & Strategy" },
     { icon: Music, label: "Music", desc: "Lo-fi & Synthwave" },
+    // This link is now active in the view below
     { icon: Camera, label: "Photography", desc: "Urban & Street", link: "http://instagram.com/stories/highlights/18143518057383699/" },
     { icon: Coffee, label: "Coffee", desc: "Pour-over" }
   ],
@@ -241,12 +242,42 @@ const PersonalView = ({ onBack }) => (
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {PERSONAL_DATA.hobbies.map((h, i) => (
-          <Card key={i} className="flex items-center gap-4">
-            <div className="p-2 bg-neutral-800 rounded"><h.icon size={24} /></div>
-            <div><div className="font-bold text-white">{h.label}</div><div className="text-sm text-neutral-400">{h.desc}</div></div>
-          </Card>
-        ))}
+        {PERSONAL_DATA.hobbies.map((h, i) => {
+          // Reusable card content for cleaner code
+          const cardContent = (
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-neutral-800 rounded"><h.icon size={24} /></div>
+              <div>
+                <div className="font-bold text-white">{h.label}</div>
+                <div className="text-sm text-neutral-400">{h.desc}</div>
+              </div>
+            </div>
+          );
+
+          // If a link exists (like for Photography), wrap it in an anchor tag
+          if (h.link) {
+            return (
+              <a
+                key={i}
+                href={h.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group"
+              >
+                <Card className="h-full hover:bg-neutral-800/80 transition-colors cursor-pointer border-neutral-700">
+                  {cardContent}
+                </Card>
+              </a>
+            );
+          }
+
+          // Default non-clickable card
+          return (
+            <Card key={i}>
+              {cardContent}
+            </Card>
+          );
+        })}
       </div>
 
       <AIMuse />
