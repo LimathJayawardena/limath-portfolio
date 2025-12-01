@@ -10,24 +10,26 @@ import {
 // --- Firebase Imports ---
 import { initializeApp } from "firebase/app";
 import {
-  getAuth, signInWithPopup, GoogleAuthProvider, signOut,
-  onAuthStateChanged, signInAnonymously
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  onAuthStateChanged
 } from "firebase/auth";
 import {
-  getFirestore, collection, addDoc, query, orderBy,
-  onSnapshot, serverTimestamp
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp
 } from "firebase/firestore";
 
 // ==============================================
-// 1. PASTE YOUR GEMINI API KEY HERE (Optional)
-// ==============================================
-const apiKey = "AIzaSyDo6AXQ0paLz2b3FuI59My3q-fM4R-ywYg";
-
-// ==============================================
-// 2. PASTE YOUR FIREBASE CONFIG HERE (Required for Guestbook)
+// FIREBASE CONFIGURATION (Inlined for stability)
 // ==============================================
 const firebaseConfig = {
-  // Go to Firebase Console -> Project Settings to get these:
   apiKey: "AIzaSyBMpjtEXjJXW0NBuYjR13CMcDyGrShrFPw",
   authDomain: "my-portfolio-limath.firebaseapp.com",
   projectId: "my-portfolio-limath",
@@ -37,23 +39,15 @@ const firebaseConfig = {
   measurementId: "G-K885RDQZ5H"
 };
 
-// --- Safe Initialization ---
-let auth = null;
-let db = null;
-let appId = "portfolio-local";
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-try {
-  // We only initialize if the user has actually replaced the placeholder text
-  if (firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith("AIzaSy...")) {
-    const app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
-  } else {
-    console.log("Firebase not configured yet. Guestbook will be disabled.");
-  }
-} catch (e) {
-  console.error("Firebase Init Error:", e);
-}
+// ==============================================
+// OPTIONAL: Gemini API Key
+// ==============================================
+const apiKey = "AIzaSyDo6AXQ0paLz2b3FuI59My3q-fM4R-ywYg";
 
 // --- API Helper ---
 const callGemini = async (prompt) => {
@@ -84,7 +78,6 @@ const PERSONAL_DATA = {
   hobbies: [
     { icon: Gamepad2, label: "Gaming", desc: "RPG & Strategy" },
     { icon: Music, label: "Music", desc: "Lo-fi & Synthwave" },
-    // This link is now active in the view below
     { icon: Camera, label: "Photography", desc: "Urban & Street", link: "http://instagram.com/stories/highlights/18143518057383699/" },
     { icon: Coffee, label: "Coffee", desc: "Pour-over" }
   ],
@@ -119,37 +112,50 @@ const Guestbook = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
+  // 1. Monitor Auth State
   useEffect(() => {
-    if (!auth) return;
     const unsubscribe = onAuthStateChanged(auth, setUser);
     return () => unsubscribe();
   }, []);
 
+  // 2. Listen to Database
   useEffect(() => {
-    if (!db) return;
-    const q = query(collection(db, 'portfolio_comments'), orderBy('timestamp', 'desc'));
+    // We use the 'guestbook' collection you created
+    const q = query(collection(db, 'guestbook'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setComments(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
     return () => unsubscribe();
   }, []);
 
+  // 3. Handle Login
   const handleLogin = async () => {
-    if (!auth) return alert("Please configure Firebase in App.jsx first!");
-    await signInWithPopup(auth, new GoogleAuthProvider());
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (error) {
+      console.error("Login failed", error);
+      alert("Login failed. Check console for details.");
+    }
   };
 
+  // 4. Send Message
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newComment.trim() || !user || !db) return;
-    await addDoc(collection(db, 'portfolio_comments'), {
-      text: newComment.trim(),
-      displayName: user.displayName || "Guest",
-      photoURL: user.photoURL,
-      uid: user.uid,
-      timestamp: serverTimestamp()
-    });
-    setNewComment("");
+    if (!newComment.trim() || !user) return;
+
+    try {
+      await addDoc(collection(db, 'guestbook'), {
+        text: newComment.trim(),
+        name: user.displayName || "Guest",
+        photo: user.photoURL,
+        uid: user.uid,
+        createdAt: serverTimestamp()
+      });
+      setNewComment("");
+    } catch (error) {
+      console.error("Error writing to guestbook:", error);
+      alert("Could not send message. Check if your database rules are set to public/test mode.");
+    }
   };
 
   return (
@@ -171,25 +177,32 @@ const Guestbook = () => {
       ) : (
         <form onSubmit={handleSubmit} className="mb-8 flex gap-2">
           <input
-            className="flex-1 bg-neutral-950 border border-neutral-800 rounded p-2 text-white"
+            className="flex-1 bg-neutral-950 border border-neutral-800 rounded p-2 text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-colors"
             placeholder="Leave a mark..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
           />
-          <button type="submit" className="bg-white text-black px-4 rounded font-bold"><Send size={16} /></button>
+          <button type="submit" className="bg-white text-black px-4 rounded font-bold hover:bg-neutral-200 transition-colors"><Send size={16} /></button>
         </form>
       )}
 
-      <div className="space-y-3 max-h-[300px] overflow-y-auto">
+      <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
         {comments.map((c) => (
-          <div key={c.id} className="bg-neutral-900/50 p-3 rounded flex gap-3">
-            {c.photoURL && <img src={c.photoURL} className="w-6 h-6 rounded-full" alt="" />}
-            <div>
-              <div className="text-xs text-neutral-400">{c.displayName}</div>
+          <div key={c.id} className="bg-neutral-900/50 p-3 rounded flex gap-3 border border-neutral-800/50">
+            {c.photo && <img src={c.photo} className="w-8 h-8 rounded-full border border-neutral-700" alt="" />}
+            <div className="flex-1">
+              <div className="flex items-baseline justify-between">
+                <div className="text-xs font-bold text-neutral-400 mb-1">{c.name}</div>
+              </div>
               <div className="text-sm text-neutral-200">{c.text}</div>
             </div>
           </div>
         ))}
+        {comments.length === 0 && (
+          <div className="text-center text-neutral-600 text-sm py-4 italic">
+            No messages yet. Be the first!
+          </div>
+        )}
       </div>
     </Card>
   );
@@ -212,7 +225,7 @@ const AIMuse = () => {
         <Sparkles size={20} /> <h3 className="font-bold">The Digital Muse</h3>
       </div>
       {idea && <p className="mb-4 text-purple-200 italic">"{idea}"</p>}
-      <button onClick={handleAsk} disabled={loading} className="px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-bold">
+      <button onClick={handleAsk} disabled={loading} className="px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-bold hover:bg-purple-500 transition-colors">
         {loading ? "Thinking..." : "Inspire Me"}
       </button>
     </Card>
@@ -228,7 +241,7 @@ const PersonalView = ({ onBack }) => (
     </div>
 
     <div className="max-w-4xl mx-auto relative z-10">
-      <button onClick={onBack} className="flex items-center gap-2 text-neutral-500 hover:text-white mb-8"><ArrowLeft size={20} /> Return</button>
+      <button onClick={onBack} className="flex items-center gap-2 text-neutral-500 hover:text-white mb-8 transition-colors"><ArrowLeft size={20} /> Return</button>
 
       <div className="mb-12">
         <div className="flex items-center gap-4 mb-6">
@@ -238,23 +251,21 @@ const PersonalView = ({ onBack }) => (
             <h1 className="text-5xl font-bold text-white mt-2">{PERSONAL_DATA.title}</h1>
           </div>
         </div>
-        <p className="text-xl text-neutral-400">{PERSONAL_DATA.bio}</p>
+        <p className="text-xl text-neutral-400 leading-relaxed">{PERSONAL_DATA.bio}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {PERSONAL_DATA.hobbies.map((h, i) => {
-          // Reusable card content for cleaner code
           const cardContent = (
             <div className="flex items-center gap-4">
-              <div className="p-2 bg-neutral-800 rounded"><h.icon size={24} /></div>
+              <div className="p-3 bg-neutral-800 rounded-lg text-neutral-200"><h.icon size={24} /></div>
               <div>
-                <div className="font-bold text-white">{h.label}</div>
+                <div className="font-bold text-white text-lg">{h.label}</div>
                 <div className="text-sm text-neutral-400">{h.desc}</div>
               </div>
             </div>
           );
 
-          // If a link exists (like for Photography), wrap it in an anchor tag
           if (h.link) {
             return (
               <a
@@ -264,14 +275,13 @@ const PersonalView = ({ onBack }) => (
                 rel="noopener noreferrer"
                 className="block group"
               >
-                <Card className="h-full hover:bg-neutral-800/80 transition-colors cursor-pointer border-neutral-700">
+                <Card className="h-full hover:bg-neutral-800/80 transition-colors cursor-pointer border-neutral-700 hover:border-neutral-500">
                   {cardContent}
                 </Card>
               </a>
             );
           }
 
-          // Default non-clickable card
           return (
             <Card key={i}>
               {cardContent}
@@ -292,7 +302,7 @@ const DeveloperView = ({ onBack }) => (
       <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-600/10 rounded-full blur-3xl" />
     </div>
 
-    <button onClick={onBack} className="absolute top-8 left-8 flex items-center gap-2 text-neutral-500 hover:text-emerald-400 z-20"><ArrowLeft size={20} /> Return</button>
+    <button onClick={onBack} className="absolute top-8 left-8 flex items-center gap-2 text-neutral-500 hover:text-emerald-400 z-20 transition-colors"><ArrowLeft size={20} /> Return</button>
 
     <div className="text-center z-10">
       <motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} className="mb-8 inline-block">
@@ -305,10 +315,10 @@ const DeveloperView = ({ onBack }) => (
       </div>
 
       <div className="flex items-center justify-center gap-3">
-        <a href="https://github.com/LimathJayawardena" target="_blank" className="flex items-center gap-2 px-6 py-3 bg-neutral-900 border border-neutral-800 rounded-full hover:border-emerald-500 transition-colors">
+        <a href="https://github.com/LimathJayawardena" target="_blank" className="flex items-center gap-2 px-6 py-3 bg-neutral-900 border border-neutral-800 rounded-full hover:border-emerald-500 hover:text-emerald-400 transition-all">
           <Github size={20} /> <span>Check GitHub</span>
         </a>
-        <span className="text-xs text-neutral-600 italic">(it also in progress)</span>
+        <span className="text-xs text-neutral-600 italic">(it is also in progress)</span>
       </div>
     </div>
   </motion.div>
@@ -328,31 +338,33 @@ const SplitLanding = ({ onSelect }) => {
         animate={{ y: introDone ? "-100%" : "0%" }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
       >
-        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter">
+        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter text-center px-4">
           <motion.span initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>Hi, I'm </motion.span>
           <motion.span initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }} className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-200 to-neutral-500">Limath Jayawardena</motion.span>
         </h1>
       </motion.div>
 
       <div
-        className="flex-1 bg-black border-r border-neutral-800 flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative"
+        className="flex-1 bg-black border-r border-neutral-800 flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden"
         onClick={() => onSelect('personal')}
       >
-        <div className="text-center z-10 group-hover:scale-110 transition-transform">
-          <User size={64} className="mx-auto mb-4 text-neutral-400 group-hover:text-white" />
-          <h2 className="text-4xl font-bold text-white">PERSONAL</h2>
-          <p className="text-neutral-500">Life & Hobbies</p>
+        <div className="absolute inset-0 bg-neutral-900/0 group-hover:bg-neutral-900/20 transition-colors" />
+        <div className="text-center z-10 group-hover:scale-110 transition-transform duration-500">
+          <User size={64} className="mx-auto mb-4 text-neutral-400 group-hover:text-white transition-colors" />
+          <h2 className="text-4xl font-bold text-white mb-2">PERSONAL</h2>
+          <p className="text-neutral-500 group-hover:text-neutral-300 transition-colors">Life & Hobbies</p>
         </div>
       </div>
 
       <div
-        className="flex-1 bg-[#050505] flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative"
+        className="flex-1 bg-[#050505] flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden"
         onClick={() => onSelect('developer')}
       >
-        <div className="text-center z-10 group-hover:scale-110 transition-transform">
-          <Code size={64} className="mx-auto mb-4 text-neutral-400 group-hover:text-white" />
-          <h2 className="text-4xl font-bold text-white font-mono">&lt;DEVELOPER /&gt;</h2>
-          <p className="text-neutral-500">Code & Projects</p>
+        <div className="absolute inset-0 bg-emerald-900/0 group-hover:bg-emerald-900/5 transition-colors" />
+        <div className="text-center z-10 group-hover:scale-110 transition-transform duration-500">
+          <Code size={64} className="mx-auto mb-4 text-neutral-400 group-hover:text-white transition-colors" />
+          <h2 className="text-4xl font-bold text-white font-mono mb-2">&lt;DEVELOPER /&gt;</h2>
+          <p className="text-neutral-500 group-hover:text-neutral-300 transition-colors">Code & Projects</p>
         </div>
       </div>
     </div>
