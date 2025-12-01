@@ -112,7 +112,7 @@ src/
 └── index.css         # Tailwind directives & global styles
 
 
-I hope this helpful...! Thanks for read. Limath/Ramika Jayawardena
+I hope this helpful...! Thanks for read. Limath Ramika Jayawardena
 
 Contact -> GitHub LimathJayawardena
 
