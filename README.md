@@ -37,10 +37,12 @@ npm install
 
 *Paste the following code into it:
 
+
 // src/firebaseConfig.js
 import { initializeApp } from "firebase/app";
 
 // REPLACE THESE VALUES WITH YOUR OWN FIREBASE KEYS
+
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -94,15 +96,20 @@ npm run dev
 
 The terminal will show a local URL (usually http://localhost:....). Open that in your browser to see your portfolio!
 
-📂 Project Structure
 
-{src/
+📂 Project Structure
+src/
 ├── assets/           # Images and static assets
+
 ├── App.jsx           # Main application logic & layout
+
 ├── Guestbook.jsx     # Guestbook component (Firestore logic)
+
 ├── firebaseConfig.js # YOUR KEYS (Do not commit this file!)
+
 ├── main.jsx          # React entry point
-└── index.css         # Tailwind directives & global styles}
+
+└── index.css         # Tailwind directives & global styles
 
 
 I hope this helpful...! Thanks for read. Limath/Ramika Jayawardena
