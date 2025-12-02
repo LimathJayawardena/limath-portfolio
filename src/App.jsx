@@ -80,9 +80,9 @@ const PERSONAL_DATA = {
       icon: Gamepad2,
       label: "Gaming",
       desc: "RPG & Strategy",
-      action: "modal", // Triggers the popup
-      steam: "https://steamcommunity.com/profiles/76561199571562449/", // YOUR STEAM LINK
-      epic: "YOUR_EPIC_ID_HERE" // Update this when you have your Epic ID
+      action: "modal",
+      steam: "https://steamcommunity.com/profiles/76561199571562449/",
+      epic: "82a9d97e039349ccbe8bc44788d1b48e"
     },
     { icon: Music, label: "Music", desc: "Lo-fi & Synthwave" },
     { icon: Camera, label: "Photography", desc: "Urban & Street", link: "http://instagram.com/stories/highlights/18143518057383699/" },
@@ -109,7 +109,7 @@ const Card = ({ children, className = "", onClick }) => (
   <motion.div
     onClick={onClick}
     variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-    className={`p-6 rounded-xl border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm hover:border-neutral-600 transition-colors ${className}`}
+    className={`p-6 rounded-xl border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm ${className}`}
   >
     {children}
   </motion.div>
@@ -146,7 +146,6 @@ const GamingModal = ({ steamLink, epicId, onClose }) => {
         </div>
 
         <div className="space-y-4">
-          {/* Steam Button */}
           <a
             href={steamLink}
             target="_blank"
@@ -161,7 +160,6 @@ const GamingModal = ({ steamLink, epicId, onClose }) => {
             </div>
           </a>
 
-          {/* Epic Button */}
           <button
             onClick={handleCopy}
             className="flex items-center justify-between w-full p-4 bg-[#2a2a2a] hover:bg-[#333] border border-neutral-700 hover:border-white rounded-xl transition-all group"
@@ -292,7 +290,7 @@ const AIMuse = () => {
   };
 
   return (
-    <Card className="mt-12 border-purple-500/30 bg-purple-900/10">
+    <Card className="mt-12 border-purple-500/30 bg-purple-900/10 hover:border-purple-500/50 transition-colors">
       <div className="flex items-center gap-2 text-purple-400 mb-4">
         <Sparkles size={20} /> <h3 className="font-bold">The Digital Muse</h3>
       </div>
@@ -306,10 +304,15 @@ const AIMuse = () => {
 
 const PersonalView = ({ onBack }) => {
   const [activeModal, setActiveModal] = useState(null);
+  const [constructionId, setConstructionId] = useState(null);
+
+  const triggerConstruction = (index) => {
+    setConstructionId(index);
+    setTimeout(() => setConstructionId(null), 2000);
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-black text-neutral-200 p-6 md:p-12 relative overflow-hidden">
-      {/* Background Blobs */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-rose-600/20 rounded-full blur-[100px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px]" />
@@ -331,50 +334,60 @@ const PersonalView = ({ onBack }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {PERSONAL_DATA.hobbies.map((h, i) => {
-            const cardContent = (
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-neutral-800 rounded-lg text-neutral-200"><h.icon size={24} /></div>
-                <div>
-                  <div className="font-bold text-white text-lg">{h.label}</div>
-                  <div className="text-sm text-neutral-400">{h.desc}</div>
+            const isConstruction = constructionId === i;
+
+            // Beautiful new hover styles + active click state
+            const cardClasses = `
+              h-full relative overflow-hidden group cursor-pointer 
+              transition-all duration-300 ease-out 
+              hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/10 
+              hover:border-neutral-600 hover:bg-neutral-800/60
+              ${isConstruction ? 'border-amber-500/50 bg-amber-900/10' : ''}
+            `;
+
+            const content = (
+              <>
+                <div className={`flex items-center gap-4 transition-opacity duration-300 ${isConstruction ? 'opacity-20 blur-sm' : 'opacity-100'}`}>
+                  <div className="p-3 bg-neutral-800 rounded-lg text-neutral-200 group-hover:scale-110 group-hover:text-white group-hover:bg-neutral-700 transition-all duration-300">
+                    <h.icon size={24} />
+                  </div>
+                  <div>
+                    <div className="font-bold text-white text-lg">{h.label}</div>
+                    <div className="text-sm text-neutral-400">{h.desc}</div>
+                  </div>
                 </div>
-              </div>
+
+                {/* Construction Overlay */}
+                <div className={`absolute inset-0 flex items-center justify-center gap-2 text-amber-500 font-bold transition-all duration-300 ${isConstruction ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
+                  <Construction size={24} /> <span>Under Construction</span>
+                </div>
+              </>
             );
 
-            // CASE 1: Gaming Modal Card
+            // 1. Modal (Gaming)
             if (h.action === "modal") {
               return (
-                <Card
-                  key={i}
-                  className="cursor-pointer hover:border-purple-500/50 transition-colors"
-                  onClick={() => setActiveModal('gaming')}
-                >
-                  {cardContent}
+                <Card key={i} className={cardClasses} onClick={() => setActiveModal('gaming')}>
+                  {content}
                 </Card>
               );
             }
 
-            // CASE 2: External Link Card
+            // 2. External Link (Photography)
             if (h.link) {
               return (
-                <a
-                  key={i}
-                  href={h.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block group"
-                >
-                  <Card className="h-full hover:bg-neutral-800/80 transition-colors cursor-pointer border-neutral-700 hover:border-neutral-500">
-                    {cardContent}
+                <a key={i} href={h.link} target="_blank" rel="noopener noreferrer" className="block h-full">
+                  <Card className={cardClasses}>
+                    {content}
                   </Card>
                 </a>
               );
             }
 
-            // CASE 3: Standard Card
+            // 3. Default (Music, Coffee) -> Triggers Construction
             return (
-              <Card key={i}>
-                {cardContent}
+              <Card key={i} className={cardClasses} onClick={() => triggerConstruction(i)}>
+                {content}
               </Card>
             );
           })}
@@ -383,7 +396,6 @@ const PersonalView = ({ onBack }) => {
         <AIMuse />
         <Guestbook />
 
-        {/* RENDER MODAL */}
         <AnimatePresence>
           {activeModal === 'gaming' && (
             <GamingModal
@@ -393,7 +405,6 @@ const PersonalView = ({ onBack }) => {
             />
           )}
         </AnimatePresence>
-
       </div>
     </motion.div>
   );
