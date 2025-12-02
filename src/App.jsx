@@ -4,7 +4,8 @@ import {
   Code, User, Gamepad2, Music, Coffee, Camera, Github,
   Mail, ArrowLeft, Terminal, Cpu, Globe, Database,
   Layers, Sparkles, RefreshCw, MessageSquare, LogOut,
-  Send, Construction, Settings, Loader2, Copy, Check, X, ExternalLink
+  Send, Construction, Settings, Loader2, Copy, Check, X, ExternalLink,
+  Zap
 } from 'lucide-react';
 
 // --- Firebase Imports ---
@@ -44,33 +45,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ==============================================
-// OPTIONAL: Gemini API Key
-// ==============================================
-const apiKey = "AIzaSyDo6AXQ0paLz2b3FuI59My3q-fM4R-ywYg";
-
-// --- API Helper ---
-const callGemini = async (prompt) => {
-  if (!apiKey) return "Please add your API Key in App.jsx to use this feature!";
-
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-      }
-    );
-    if (!response.ok) throw new Error('API Call Failed');
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Error parsing response.";
-  } catch (error) {
-    console.error("Gemini Error:", error);
-    return "AI Connection Failed. Check console for details.";
-  }
-};
-
 // --- Data Constants ---
 const PERSONAL_DATA = {
   title: "The Human",
@@ -93,15 +67,80 @@ const PERSONAL_DATA = {
   ]
 };
 
-const DEV_DATA = {
-  title: "The Coder",
-  bio: "I architect scalable web solutions with a focus on performance and user experience. My code is clean, tested, and documented.",
-  skills: [
-    { icon: Globe, label: "Frontend", items: ["React", "Next.js", "Tailwind"] },
-    { icon: Database, label: "Backend", items: ["Node.js", "PostgreSQL"] },
-    { icon: Layers, label: "DevOps", items: ["Docker", "AWS"] },
-    { icon: Terminal, label: "Tools", items: ["Git", "Vim"] }
-  ]
+// --- NEW CREATIVE COMPONENT: The Glitch Oracle ---
+const QUESTS = [
+  "QUEST: Capture a photo of something red.",
+  "QUEST: Listen to an album from 1985.",
+  "QUEST: Sketch your immediate surroundings.",
+  "QUEST: Walk without headphones for 30 mins.",
+  "QUEST: Read one chapter of a physical book.",
+  "QUEST: Find a pattern in nature.",
+  "QUEST: Drink a glass of water right now.",
+  "QUEST: Organize your desktop icons.",
+  "STATUS: Reality Rendering...",
+  "STATUS: System Normal.",
+  "TRUTH: Code is poetry written in logic."
+];
+
+const DailyQuest = () => {
+  const [text, setText] = useState("AWAITING_SIGNAL...");
+  const [decryption, setDecryption] = useState(false);
+
+  const decrypt = () => {
+    setDecryption(true);
+    let iterations = 0;
+    const targetText = QUESTS[Math.floor(Math.random() * QUESTS.length)];
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+    const interval = setInterval(() => {
+      setText(prev =>
+        targetText.split("").map((letter, index) => {
+          if (index < iterations) {
+            return targetText[index];
+          }
+          return characters[Math.floor(Math.random() * characters.length)];
+        }).join("")
+      );
+
+      if (iterations >= targetText.length) {
+        clearInterval(interval);
+        setDecryption(false);
+      }
+
+      iterations += 1 / 2; // Controls speed of decryption
+    }, 30);
+  };
+
+  return (
+    <Card className="mt-12 border-purple-500/30 bg-purple-900/10 hover:border-purple-500/60 transition-colors group">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 text-purple-400">
+          <Zap size={20} className={decryption ? "animate-pulse" : ""} />
+          <h3 className="font-bold font-mono tracking-wider">DAILY_ORACLE</h3>
+        </div>
+        <div className="flex gap-1">
+          <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-purple-500/50"></span>
+          <span className="w-2 h-2 rounded-full bg-purple-500/20"></span>
+        </div>
+      </div>
+
+      <div className="bg-black/40 p-4 rounded-lg border border-purple-500/20 font-mono text-sm text-purple-200 min-h-[60px] flex items-center">
+        <span className="mr-2 text-purple-500">{">"}</span>
+        {text}
+        <span className="animate-pulse ml-1">_</span>
+      </div>
+
+      <button
+        onClick={decrypt}
+        disabled={decryption}
+        className="mt-4 w-full py-2 bg-purple-600/20 border border-purple-500/50 text-purple-300 rounded hover:bg-purple-600 hover:text-white transition-all font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+      >
+        {decryption ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
+        {decryption ? "DECRYPTING..." : "GENERATE_SIGNAL"}
+      </button>
+    </Card>
+  );
 };
 
 // --- Sub-Components ---
@@ -278,30 +317,6 @@ const Guestbook = () => {
   );
 };
 
-const AIMuse = () => {
-  const [loading, setLoading] = useState(false);
-  const [idea, setIdea] = useState(null);
-
-  const handleAsk = async () => {
-    setLoading(true);
-    const result = await callGemini("Suggest a creative short hobby challenge for a gamer/photographer.");
-    setIdea(result);
-    setLoading(false);
-  };
-
-  return (
-    <Card className="mt-12 border-purple-500/30 bg-purple-900/10 hover:border-purple-500/50 transition-colors">
-      <div className="flex items-center gap-2 text-purple-400 mb-4">
-        <Sparkles size={20} /> <h3 className="font-bold">The Digital Muse</h3>
-      </div>
-      {idea && <p className="mb-4 text-purple-200 italic">"{idea}"</p>}
-      <button onClick={handleAsk} disabled={loading} className="px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-bold hover:bg-purple-500 transition-colors">
-        {loading ? "Thinking..." : "Inspire Me"}
-      </button>
-    </Card>
-  );
-};
-
 const PersonalView = ({ onBack }) => {
   const [activeModal, setActiveModal] = useState(null);
   const [constructionId, setConstructionId] = useState(null);
@@ -335,8 +350,6 @@ const PersonalView = ({ onBack }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {PERSONAL_DATA.hobbies.map((h, i) => {
             const isConstruction = constructionId === i;
-
-            // Beautiful new hover styles + active click state
             const cardClasses = `
               h-full relative overflow-hidden group cursor-pointer 
               transition-all duration-300 ease-out 
@@ -356,15 +369,12 @@ const PersonalView = ({ onBack }) => {
                     <div className="text-sm text-neutral-400">{h.desc}</div>
                   </div>
                 </div>
-
-                {/* Construction Overlay */}
                 <div className={`absolute inset-0 flex items-center justify-center gap-2 text-amber-500 font-bold transition-all duration-300 ${isConstruction ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
                   <Construction size={24} /> <span>Under Construction</span>
                 </div>
               </>
             );
 
-            // 1. Modal (Gaming)
             if (h.action === "modal") {
               return (
                 <Card key={i} className={cardClasses} onClick={() => setActiveModal('gaming')}>
@@ -372,19 +382,13 @@ const PersonalView = ({ onBack }) => {
                 </Card>
               );
             }
-
-            // 2. External Link (Photography)
             if (h.link) {
               return (
                 <a key={i} href={h.link} target="_blank" rel="noopener noreferrer" className="block h-full">
-                  <Card className={cardClasses}>
-                    {content}
-                  </Card>
+                  <Card className={cardClasses}>{content}</Card>
                 </a>
               );
             }
-
-            // 3. Default (Music, Coffee) -> Triggers Construction
             return (
               <Card key={i} className={cardClasses} onClick={() => triggerConstruction(i)}>
                 {content}
@@ -393,7 +397,8 @@ const PersonalView = ({ onBack }) => {
           })}
         </div>
 
-        <AIMuse />
+        {/* --- REPLACED AI MUSE WITH DAILY QUEST --- */}
+        <DailyQuest />
         <Guestbook />
 
         <AnimatePresence>
