@@ -4,7 +4,7 @@ import {
   Code, User, Gamepad2, Music, Coffee, Camera, Github,
   Mail, ArrowLeft, Terminal, Cpu, Globe, Database,
   Layers, Sparkles, RefreshCw, MessageSquare, LogOut,
-  Send, Construction, Settings, Loader2
+  Send, Construction, Settings, Loader2, Copy, Check, X, ExternalLink
 } from 'lucide-react';
 
 // --- Firebase Imports ---
@@ -27,7 +27,7 @@ import {
 } from "firebase/firestore";
 
 // ==============================================
-// FIREBASE CONFIGURATION (Inlined for stability)
+// FIREBASE CONFIGURATION
 // ==============================================
 const firebaseConfig = {
   apiKey: "AIzaSyBMpjtEXjJXW0NBuYjR13CMcDyGrShrFPw",
@@ -76,7 +76,14 @@ const PERSONAL_DATA = {
   title: "The Human",
   bio: "I believe that great code comes from a balanced mind. When I'm not debugging, I'm exploring the world through music, gaming, and photography.",
   hobbies: [
-    { icon: Gamepad2, label: "Gaming", desc: "RPG & Strategy" },
+    {
+      icon: Gamepad2,
+      label: "Gaming",
+      desc: "RPG & Strategy",
+      action: "modal", // Triggers the popup
+      steam: "https://steamcommunity.com/profiles/76561199571562449/", // YOUR STEAM LINK
+      epic: "YOUR_EPIC_ID_HERE" // Update this when you have your Epic ID
+    },
     { icon: Music, label: "Music", desc: "Lo-fi & Synthwave" },
     { icon: Camera, label: "Photography", desc: "Urban & Street", link: "http://instagram.com/stories/highlights/18143518057383699/" },
     { icon: Coffee, label: "Coffee", desc: "Pour-over" }
@@ -98,8 +105,9 @@ const DEV_DATA = {
 };
 
 // --- Sub-Components ---
-const Card = ({ children, className = "" }) => (
+const Card = ({ children, className = "", onClick }) => (
   <motion.div
+    onClick={onClick}
     variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
     className={`p-6 rounded-xl border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm hover:border-neutral-600 transition-colors ${className}`}
   >
@@ -107,20 +115,86 @@ const Card = ({ children, className = "" }) => (
   </motion.div>
 );
 
+const GamingModal = ({ steamLink, epicId, onClose }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(epicId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+        className="bg-[#111] border border-neutral-700 p-8 rounded-2xl max-w-sm w-full shadow-2xl relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button onClick={onClose} className="absolute top-4 right-4 text-neutral-500 hover:text-white">
+          <X size={20} />
+        </button>
+
+        <div className="flex items-center gap-3 mb-6 text-white">
+          <Gamepad2 size={28} className="text-purple-500" />
+          <h2 className="text-2xl font-bold">Let's Play</h2>
+        </div>
+
+        <div className="space-y-4">
+          {/* Steam Button */}
+          <a
+            href={steamLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between w-full p-4 bg-[#171a21] hover:bg-[#2a475e] border border-neutral-700 hover:border-blue-400 rounded-xl transition-all group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-white font-bold">Steam</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-neutral-400 group-hover:text-white">
+              Profile <ExternalLink size={12} />
+            </div>
+          </a>
+
+          {/* Epic Button */}
+          <button
+            onClick={handleCopy}
+            className="flex items-center justify-between w-full p-4 bg-[#2a2a2a] hover:bg-[#333] border border-neutral-700 hover:border-white rounded-xl transition-all group"
+          >
+            <div className="text-left">
+              <span className="block text-white font-bold">Epic Games</span>
+              <span className="text-xs text-neutral-400">{epicId}</span>
+            </div>
+            <div className="text-xs">
+              {copied ? (
+                <span className="text-green-400 flex items-center gap-1"><Check size={14} /> Copied</span>
+              ) : (
+                <span className="text-neutral-500 group-hover:text-white flex items-center gap-1"><Copy size={14} /> Copy ID</span>
+              )}
+            </div>
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const Guestbook = () => {
   const [user, setUser] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
-  // 1. Monitor Auth State
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, setUser);
     return () => unsubscribe();
   }, []);
 
-  // 2. Listen to Database
   useEffect(() => {
-    // We use the 'guestbook' collection you created
     const q = query(collection(db, 'guestbook'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setComments(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -128,7 +202,6 @@ const Guestbook = () => {
     return () => unsubscribe();
   }, []);
 
-  // 3. Handle Login
   const handleLogin = async () => {
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());
@@ -138,7 +211,6 @@ const Guestbook = () => {
     }
   };
 
-  // 4. Send Message
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newComment.trim() || !user) return;
@@ -232,69 +304,100 @@ const AIMuse = () => {
   );
 };
 
-const PersonalView = ({ onBack }) => (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-black text-neutral-200 p-6 md:p-12 relative overflow-hidden">
-    {/* Background Blobs */}
-    <div className="fixed inset-0 pointer-events-none">
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-rose-600/20 rounded-full blur-[100px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px]" />
-    </div>
+const PersonalView = ({ onBack }) => {
+  const [activeModal, setActiveModal] = useState(null);
 
-    <div className="max-w-4xl mx-auto relative z-10">
-      <button onClick={onBack} className="flex items-center gap-2 text-neutral-500 hover:text-white mb-8 transition-colors"><ArrowLeft size={20} /> Return</button>
-
-      <div className="mb-12">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="p-4 bg-neutral-900 rounded-full border border-neutral-800"><User size={48} /></div>
-          <div>
-            <span className="text-amber-400 text-xs font-bold uppercase border border-amber-500/30 bg-amber-500/10 px-3 py-1 rounded-full">Under Construction</span>
-            <h1 className="text-5xl font-bold text-white mt-2">{PERSONAL_DATA.title}</h1>
-          </div>
-        </div>
-        <p className="text-xl text-neutral-400 leading-relaxed">{PERSONAL_DATA.bio}</p>
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-black text-neutral-200 p-6 md:p-12 relative overflow-hidden">
+      {/* Background Blobs */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-rose-600/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px]" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {PERSONAL_DATA.hobbies.map((h, i) => {
-          const cardContent = (
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-neutral-800 rounded-lg text-neutral-200"><h.icon size={24} /></div>
-              <div>
-                <div className="font-bold text-white text-lg">{h.label}</div>
-                <div className="text-sm text-neutral-400">{h.desc}</div>
-              </div>
-            </div>
-          );
+      <div className="max-w-4xl mx-auto relative z-10">
+        <button onClick={onBack} className="flex items-center gap-2 text-neutral-500 hover:text-white mb-8 transition-colors"><ArrowLeft size={20} /> Return</button>
 
-          if (h.link) {
-            return (
-              <a
-                key={i}
-                href={h.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block group"
-              >
-                <Card className="h-full hover:bg-neutral-800/80 transition-colors cursor-pointer border-neutral-700 hover:border-neutral-500">
+        <div className="mb-12">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-neutral-900 rounded-full border border-neutral-800"><User size={48} /></div>
+            <div>
+              <span className="text-amber-400 text-xs font-bold uppercase border border-amber-500/30 bg-amber-500/10 px-3 py-1 rounded-full">Under Construction</span>
+              <h1 className="text-5xl font-bold text-white mt-2">{PERSONAL_DATA.title}</h1>
+            </div>
+          </div>
+          <p className="text-xl text-neutral-400 leading-relaxed">{PERSONAL_DATA.bio}</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {PERSONAL_DATA.hobbies.map((h, i) => {
+            const cardContent = (
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-neutral-800 rounded-lg text-neutral-200"><h.icon size={24} /></div>
+                <div>
+                  <div className="font-bold text-white text-lg">{h.label}</div>
+                  <div className="text-sm text-neutral-400">{h.desc}</div>
+                </div>
+              </div>
+            );
+
+            // CASE 1: Gaming Modal Card
+            if (h.action === "modal") {
+              return (
+                <Card
+                  key={i}
+                  className="cursor-pointer hover:border-purple-500/50 transition-colors"
+                  onClick={() => setActiveModal('gaming')}
+                >
                   {cardContent}
                 </Card>
-              </a>
+              );
+            }
+
+            // CASE 2: External Link Card
+            if (h.link) {
+              return (
+                <a
+                  key={i}
+                  href={h.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block group"
+                >
+                  <Card className="h-full hover:bg-neutral-800/80 transition-colors cursor-pointer border-neutral-700 hover:border-neutral-500">
+                    {cardContent}
+                  </Card>
+                </a>
+              );
+            }
+
+            // CASE 3: Standard Card
+            return (
+              <Card key={i}>
+                {cardContent}
+              </Card>
             );
-          }
+          })}
+        </div>
 
-          return (
-            <Card key={i}>
-              {cardContent}
-            </Card>
-          );
-        })}
+        <AIMuse />
+        <Guestbook />
+
+        {/* RENDER MODAL */}
+        <AnimatePresence>
+          {activeModal === 'gaming' && (
+            <GamingModal
+              steamLink={PERSONAL_DATA.hobbies.find(h => h.label === "Gaming").steam}
+              epicId={PERSONAL_DATA.hobbies.find(h => h.label === "Gaming").epic}
+              onClose={() => setActiveModal(null)}
+            />
+          )}
+        </AnimatePresence>
+
       </div>
-
-      <AIMuse />
-      <Guestbook />
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 const DeveloperView = ({ onBack }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-[#050505] text-white p-6 flex flex-col items-center justify-center relative overflow-hidden">
