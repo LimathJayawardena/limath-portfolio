@@ -112,30 +112,30 @@ const DailyQuest = () => {
   };
 
   return (
-    // LIGHT THEME: Soft purple card with white background
-    <Card className="mt-12 border-purple-200 bg-white/80 shadow-xl hover:shadow-purple-200/50 transition-all group">
+    // DARK THEME: Glowing Pink/Purple Card
+    <Card className="mt-12 border-pink-500/30 bg-black/40 hover:border-pink-500/80 transition-all group shadow-[0_0_15px_rgba(236,72,153,0.1)] hover:shadow-[0_0_25px_rgba(236,72,153,0.2)]">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 text-purple-600">
-          <Zap size={20} className={decryption ? "animate-pulse text-amber-500" : ""} />
+        <div className="flex items-center gap-2 text-pink-400">
+          <Zap size={20} className={decryption ? "animate-pulse text-yellow-300" : ""} />
           <h3 className="font-bold font-mono tracking-wider">DAILY_ORACLE</h3>
         </div>
         <div className="flex gap-1">
-          <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-          <span className="w-2 h-2 rounded-full bg-purple-300"></span>
-          <span className="w-2 h-2 rounded-full bg-purple-100"></span>
+          <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-purple-500/50"></span>
+          <span className="w-2 h-2 rounded-full bg-indigo-500/20"></span>
         </div>
       </div>
 
-      <div className="bg-purple-50 p-4 rounded-lg border border-purple-100 font-mono text-sm text-purple-900 min-h-[60px] flex items-center shadow-inner">
-        <span className="mr-2 text-purple-500">{">"}</span>
+      <div className="bg-black/60 p-4 rounded-lg border border-pink-500/20 font-mono text-sm text-pink-100 min-h-[60px] flex items-center shadow-inner">
+        <span className="mr-2 text-pink-500">{">"}</span>
         {text}
-        <span className="animate-pulse ml-1 text-purple-400">_</span>
+        <span className="animate-pulse ml-1 text-pink-500">_</span>
       </div>
 
       <button
         onClick={decrypt}
         disabled={decryption}
-        className="mt-4 w-full py-2 bg-purple-100 text-purple-700 border border-purple-200 rounded-lg hover:bg-purple-600 hover:text-white transition-all font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2"
+        className="mt-4 w-full py-2 bg-pink-600/10 border border-pink-500/50 text-pink-200 rounded hover:bg-pink-600 hover:text-white transition-all font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:shadow-[0_0_15px_rgba(236,72,153,0.4)]"
       >
         {decryption ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
         {decryption ? "DECRYPTING..." : "GENERATE_SIGNAL"}
@@ -168,21 +168,21 @@ const GamingModal = ({ steamLink, epicId, onClose }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-        className="bg-white border border-stone-200 p-8 rounded-2xl max-w-sm w-full shadow-2xl relative"
+        className="bg-[#0a0a0a] border border-purple-500/50 p-8 rounded-2xl max-w-sm w-full shadow-[0_0_50px_rgba(168,85,247,0.2)] relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800">
+        <button onClick={onClose} className="absolute top-4 right-4 text-neutral-500 hover:text-white">
           <X size={20} />
         </button>
 
-        <div className="flex items-center gap-3 mb-6 text-stone-800">
-          <Gamepad2 size={28} className="text-rose-500" />
-          <h2 className="text-2xl font-bold">Let's Play</h2>
+        <div className="flex items-center gap-3 mb-6 text-white">
+          <Gamepad2 size={28} className="text-purple-400" />
+          <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">Let's Play</h2>
         </div>
 
         <div className="space-y-4">
@@ -190,29 +190,29 @@ const GamingModal = ({ steamLink, epicId, onClose }) => {
             href={steamLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between w-full p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-blue-400 rounded-xl transition-all group"
+            className="flex items-center justify-between w-full p-4 bg-[#171a21] hover:bg-[#2a475e] border border-neutral-700 hover:border-blue-400 rounded-xl transition-all group"
           >
             <div className="flex items-center gap-3">
-              <span className="text-slate-800 font-bold">Steam</span>
+              <span className="text-white font-bold">Steam</span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-slate-500 group-hover:text-blue-600">
+            <div className="flex items-center gap-2 text-xs text-neutral-400 group-hover:text-white">
               Profile <ExternalLink size={12} />
             </div>
           </a>
 
           <button
             onClick={handleCopy}
-            className="flex items-center justify-between w-full p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 hover:border-stone-400 rounded-xl transition-all group"
+            className="flex items-center justify-between w-full p-4 bg-[#2a2a2a] hover:bg-[#333] border border-neutral-700 hover:border-white rounded-xl transition-all group"
           >
             <div className="text-left">
-              <span className="block text-stone-800 font-bold">Epic Games</span>
-              <span className="text-xs text-stone-500">{epicId}</span>
+              <span className="block text-white font-bold">Epic Games</span>
+              <span className="text-xs text-neutral-400">{epicId}</span>
             </div>
             <div className="text-xs">
               {copied ? (
-                <span className="text-green-600 flex items-center gap-1"><Check size={14} /> Copied</span>
+                <span className="text-green-400 flex items-center gap-1"><Check size={14} /> Copied</span>
               ) : (
-                <span className="text-stone-400 group-hover:text-stone-600 flex items-center gap-1"><Copy size={14} /> Copy ID</span>
+                <span className="text-neutral-500 group-hover:text-white flex items-center gap-1"><Copy size={14} /> Copy ID</span>
               )}
             </div>
           </button>
@@ -269,48 +269,48 @@ const Guestbook = () => {
   };
 
   return (
-    // LIGHT THEME: White background, subtle shadows
-    <Card className="mt-12 border-stone-200 bg-white/80 shadow-lg">
+    // DARK THEME: Glassy Card
+    <Card className="mt-12 border-neutral-700/50 bg-black/40">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3 text-stone-800">
-          <MessageSquare size={20} className="text-rose-400" />
+        <div className="flex items-center gap-3 text-white">
+          <MessageSquare size={20} className="text-purple-400" />
           <h3 className="font-bold text-sm">Guestbook</h3>
         </div>
-        {user && <button onClick={() => signOut(auth)} className="text-xs text-red-400 hover:text-red-600"><LogOut size={12} /></button>}
+        {user && <button onClick={() => signOut(auth)} className="text-xs text-red-400"><LogOut size={12} /></button>}
       </div>
 
       {!user ? (
         <div className="text-center py-6">
-          <button onClick={handleLogin} className="bg-stone-800 text-white px-6 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform shadow-lg shadow-stone-800/20">
+          <button onClick={handleLogin} className="bg-white text-black px-6 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.3)]">
             Sign in to Comment
           </button>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="mb-8 flex gap-2">
           <input
-            className="flex-1 bg-stone-50 border border-stone-200 rounded p-2 text-stone-800 placeholder-stone-400 focus:outline-none focus:border-rose-400 focus:bg-white transition-colors"
+            className="flex-1 bg-neutral-900/80 border border-neutral-700 rounded p-2 text-white placeholder-neutral-500 focus:outline-none focus:border-purple-500 transition-colors"
             placeholder="Leave a mark..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
           />
-          <button type="submit" className="bg-rose-500 text-white px-4 rounded font-bold hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/20"><Send size={16} /></button>
+          <button type="submit" className="bg-purple-600 text-white px-4 rounded font-bold hover:bg-purple-500 transition-colors"><Send size={16} /></button>
         </form>
       )}
 
       <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
         {comments.map((c) => (
-          <div key={c.id} className="bg-stone-50 p-3 rounded flex gap-3 border border-stone-100">
-            {c.photo && <img src={c.photo} className="w-8 h-8 rounded-full border border-stone-200" alt="" />}
+          <div key={c.id} className="bg-neutral-900/80 p-3 rounded flex gap-3 border border-neutral-800">
+            {c.photo && <img src={c.photo} className="w-8 h-8 rounded-full border border-neutral-700" alt="" />}
             <div className="flex-1">
               <div className="flex items-baseline justify-between">
-                <div className="text-xs font-bold text-stone-700 mb-1">{c.name}</div>
+                <div className="text-xs font-bold text-purple-300 mb-1">{c.name}</div>
               </div>
-              <div className="text-sm text-stone-600">{c.text}</div>
+              <div className="text-sm text-neutral-200">{c.text}</div>
             </div>
           </div>
         ))}
         {comments.length === 0 && (
-          <div className="text-center text-stone-400 text-sm py-4 italic">
+          <div className="text-center text-neutral-500 text-sm py-4 italic">
             No messages yet. Be the first!
           </div>
         )}
@@ -329,31 +329,31 @@ const PersonalView = ({ onBack }) => {
   };
 
   return (
-    // LIGHT THEME: Soft Peach/Cream Gradient
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen bg-[#fdfbf7] text-stone-800 p-6 md:p-12 relative overflow-hidden"
+    // DARK THEME: "Neon Galaxy" - Deep Purple/Blue Gradient Background
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      exit={{ opacity: 0 }} 
+      className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900 via-[#0f0c29] to-black text-neutral-200 p-6 md:p-12 relative overflow-hidden"
     >
       <div className="fixed inset-0 pointer-events-none">
-        {/* Soft pastel ambient blobs */}
-        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-orange-100 rounded-full blur-[80px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-rose-100 rounded-full blur-[80px]" />
+        {/* Colorful ambient orbs */}
+        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-600/20 rounded-full blur-[120px]" />
       </div>
 
       <div className="max-w-4xl mx-auto relative z-10">
-        <button onClick={onBack} className="flex items-center gap-2 text-stone-400 hover:text-stone-800 mb-8 transition-colors"><ArrowLeft size={20} /> Return</button>
+        <button onClick={onBack} className="flex items-center gap-2 text-indigo-300/70 hover:text-white mb-8 transition-colors"><ArrowLeft size={20} /> Return</button>
 
         <div className="mb-12">
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-4 bg-white rounded-full border border-stone-100 shadow-xl shadow-stone-200/50"><User size={48} className="text-orange-400" /></div>
+            <div className="p-4 bg-white/5 backdrop-blur-sm rounded-full border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)]"><User size={48} className="text-pink-300" /></div>
             <div>
-              <span className="text-amber-600 text-xs font-bold uppercase border border-amber-200 bg-amber-50 px-3 py-1 rounded-full">Under Construction</span>
-              <h1 className="text-5xl font-bold text-stone-900 mt-2">{PERSONAL_DATA.title}</h1>
+              <span className="text-amber-300 text-xs font-bold uppercase border border-amber-500/30 bg-amber-500/10 px-3 py-1 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.2)]">Under Construction</span>
+              <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-200 via-purple-200 to-indigo-200 mt-2">{PERSONAL_DATA.title}</h1>
             </div>
           </div>
-          <p className="text-xl text-stone-600 leading-relaxed font-light">{PERSONAL_DATA.bio}</p>
+          <p className="text-xl text-indigo-100/80 leading-relaxed font-light">{PERSONAL_DATA.bio}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -362,24 +362,24 @@ const PersonalView = ({ onBack }) => {
             const cardClasses = `
               h-full relative overflow-hidden group cursor-pointer 
               transition-all duration-300 ease-out 
-              border border-white bg-white/60 backdrop-blur-sm shadow-sm
-              hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-100 
-              hover:border-orange-200 hover:bg-white
-              ${isConstruction ? 'border-amber-400 bg-amber-50' : ''}
+              border border-white/5 bg-white/5 backdrop-blur-sm
+              hover:-translate-y-1 hover:shadow-2xl hover:shadow-pink-500/10 
+              hover:border-pink-500/30 hover:bg-white/10
+              ${isConstruction ? 'border-amber-500/50 bg-amber-900/20' : ''}
             `;
 
             const content = (
               <>
                 <div className={`flex items-center gap-4 transition-opacity duration-300 ${isConstruction ? 'opacity-20 blur-sm' : 'opacity-100'}`}>
-                  <div className="p-3 bg-stone-50 rounded-lg text-stone-500 group-hover:scale-110 group-hover:text-white group-hover:bg-rose-400 transition-all duration-300">
+                  <div className="p-3 bg-white/5 rounded-lg text-indigo-200 group-hover:scale-110 group-hover:text-white group-hover:bg-pink-500/20 transition-all duration-300">
                     <h.icon size={24} />
                   </div>
                   <div>
-                    <div className="font-bold text-stone-800 text-lg">{h.label}</div>
-                    <div className="text-sm text-stone-500">{h.desc}</div>
+                    <div className="font-bold text-white text-lg">{h.label}</div>
+                    <div className="text-sm text-indigo-200/60">{h.desc}</div>
                   </div>
                 </div>
-                <div className={`absolute inset-0 flex items-center justify-center gap-2 text-amber-500 font-bold transition-all duration-300 ${isConstruction ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex items-center justify-center gap-2 text-amber-400 font-bold transition-all duration-300 ${isConstruction ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
                   <Construction size={24} /> <span>Under Construction</span>
                 </div>
               </>
@@ -425,34 +425,34 @@ const PersonalView = ({ onBack }) => {
 };
 
 const DeveloperView = ({ onBack }) => (
-  // LIGHT THEME: Clean Tech Lab (White/Slate/Cyan)
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-slate-50 text-slate-800 p-6 flex flex-col items-center justify-center relative overflow-hidden">
+  // DARK THEME: "Cyber Matrix" - Black with Neon Green/Cyan
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-black text-white p-6 flex flex-col items-center justify-center relative overflow-hidden">
     <div className="absolute inset-0 pointer-events-none">
-      {/* Tech Grid Background - subtle grey */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-100/50 rounded-full blur-[100px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-100/50 rounded-full blur-[100px]" />
+       {/* Tech Grid Background - Matrix Style */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px]" />
+      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-[100px]" />
     </div>
 
-    <button onClick={onBack} className="absolute top-8 left-8 flex items-center gap-2 text-slate-400 hover:text-slate-800 z-20 transition-colors"><ArrowLeft size={20} /> Return</button>
+    <button onClick={onBack} className="absolute top-8 left-8 flex items-center gap-2 text-neutral-500 hover:text-emerald-400 z-20 transition-colors"><ArrowLeft size={20} /> Return</button>
 
     <div className="text-center z-10">
       <motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} className="mb-8 inline-block">
-        <Settings size={120} className="text-slate-200" />
+        <Settings size={120} className="text-emerald-500/20 drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]" />
       </motion.div>
 
-      {/* Clean Gradient Text */}
-      <h1 className="text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600">COMING SOON</h1>
-
-      <div className="flex items-center justify-center gap-2 text-slate-500 font-mono mb-8 bg-white/80 px-4 py-2 rounded border border-slate-200 shadow-sm">
-        <Loader2 className="animate-spin text-cyan-500" size={16} /> SYSTEM_UPGRADE_IN_PROGRESS...
+      {/* Neon Gradient Text */}
+      <h1 className="text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-500 drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]">COMING SOON</h1>
+      
+      <div className="flex items-center justify-center gap-2 text-emerald-500/80 font-mono mb-8 bg-emerald-950/30 px-4 py-2 rounded border border-emerald-500/20">
+        <Loader2 className="animate-spin" size={16} /> SYSTEM_UPGRADE_IN_PROGRESS...
       </div>
 
       <div className="flex items-center justify-center gap-3">
-        <a href="https://github.com/LimathJayawardena" target="_blank" className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-full hover:border-cyan-500 hover:text-cyan-600 hover:shadow-lg hover:shadow-cyan-100 transition-all">
+        <a href="https://github.com/LimathJayawardena" target="_blank" className="flex items-center gap-2 px-6 py-3 bg-neutral-900 border border-neutral-800 rounded-full hover:border-emerald-500 hover:text-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all">
           <Github size={20} /> <span>Check GitHub</span>
         </a>
-        <span className="text-xs text-slate-400 italic">(it is also in progress)</span>
+        <span className="text-xs text-neutral-600 italic">(it is also in progress)</span>
       </div>
     </div>
   </motion.div>
@@ -466,52 +466,52 @@ const SplitLanding = ({ onSelect }) => {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col md:flex-row bg-white relative overflow-hidden">
+    <div className="h-screen flex flex-col md:flex-row bg-black relative overflow-hidden">
       <motion.div
-        className="absolute inset-0 flex items-center justify-center z-50 bg-white pointer-events-none"
+        className="absolute inset-0 flex items-center justify-center z-50 bg-black pointer-events-none"
         animate={{ y: introDone ? "-100%" : "0%" }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
       >
-        <h1 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter text-center px-4">
+        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter text-center px-4">
           <motion.span initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>Hi, I'm </motion.span>
-
-          <motion.div
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.8 }}
+          
+          <motion.div 
+            initial={{ opacity: 0, x: 100 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ delay: 0.8 }} 
             className="glitch-wrapper"
             style={{ display: 'inline-block' }}
           >
-            {/* Note: In CSS you might need to change glitch text color to black/slate for this light theme */}
-            <span className="glitch" data-text="Limath Jayawardena" style={{ color: '#1e293b' }}>Limath Jayawardena</span>
+            {/* Reverted inline style to default (white) for dark mode */}
+            <span className="glitch" data-text="Limath Jayawardena">Limath Jayawardena</span>
           </motion.div>
-
+          
         </h1>
       </motion.div>
 
-      {/* LEFT: Warm/Human Side (Soft Cream) */}
+      {/* LEFT: Warm/Human Side (Dark Purple/Pink) */}
       <div
-        className="flex-1 bg-[#fdfbf7] border-r border-stone-200 flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden"
+        className="flex-1 bg-gradient-to-br from-indigo-950 via-purple-950 to-black border-r border-white/10 flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden"
         onClick={() => onSelect('personal')}
       >
-        <div className="absolute inset-0 bg-orange-100/0 group-hover:bg-orange-100/50 transition-colors" />
+        <div className="absolute inset-0 bg-pink-500/0 group-hover:bg-pink-500/10 transition-colors" />
         <div className="text-center z-10 group-hover:scale-110 transition-transform duration-500">
-          <User size={64} className="mx-auto mb-4 text-stone-300 group-hover:text-stone-800 transition-colors" />
-          <h2 className="text-4xl font-bold text-stone-800 mb-2 tracking-wide">PERSONAL</h2>
-          <p className="text-stone-400 group-hover:text-stone-600 transition-colors font-light">Life & Hobbies</p>
+          <User size={64} className="mx-auto mb-4 text-pink-300/50 group-hover:text-pink-300 transition-colors shadow-purple-500/50" />
+          <h2 className="text-4xl font-bold text-white mb-2 tracking-wide">PERSONAL</h2>
+          <p className="text-pink-300/50 group-hover:text-pink-200 transition-colors font-light">Life & Hobbies</p>
         </div>
       </div>
 
-      {/* RIGHT: Cool/Dev Side (Crisp White/Slate) */}
+      {/* RIGHT: Cool/Dev Side (Dark Cyan/Emerald) */}
       <div
-        className="flex-1 bg-slate-50 flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden"
+        className="flex-1 bg-gradient-to-bl from-slate-950 via-[#050505] to-black flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden"
         onClick={() => onSelect('developer')}
       >
-        <div className="absolute inset-0 bg-cyan-100/0 group-hover:bg-cyan-100/50 transition-colors" />
+        <div className="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/5 transition-colors" />
         <div className="text-center z-10 group-hover:scale-110 transition-transform duration-500">
-          <Code size={64} className="mx-auto mb-4 text-slate-300 group-hover:text-slate-800 transition-colors" />
-          <h2 className="text-4xl font-bold text-slate-800 font-mono mb-2 tracking-tighter">&lt;DEVELOPER /&gt;</h2>
-          <p className="text-slate-400 group-hover:text-slate-600 transition-colors font-mono text-sm">Code & Projects</p>
+          <Code size={64} className="mx-auto mb-4 text-emerald-500/50 group-hover:text-emerald-400 transition-colors" />
+          <h2 className="text-4xl font-bold text-white font-mono mb-2 tracking-tighter">&lt;DEVELOPER /&gt;</h2>
+          <p className="text-emerald-500/50 group-hover:text-emerald-400/80 transition-colors font-mono text-sm">Code & Projects</p>
         </div>
       </div>
     </div>
