@@ -459,7 +459,18 @@ const SplitLanding = ({ onSelect }) => {
       >
         <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter text-center px-4">
           <motion.span initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>Hi, I'm </motion.span>
-          <motion.span initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }} className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-200 to-neutral-500">Limath Jayawardena</motion.span>
+
+          {/* UPDATED CODE: GLITCH EFFECT ADDED HERE */}
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.8 }}
+            className="glitch-wrapper"
+            style={{ display: 'inline-block' }}
+          >
+            <span className="glitch" data-text="Limath Jayawardena">Limath Jayawardena</span>
+          </motion.div>
+
         </h1>
       </motion.div>
 
