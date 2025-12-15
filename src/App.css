@@ -274,3 +274,55 @@
     clip: rect(0, 9999px, 0, 0);
   }
 }
+
+/* ================================================= */
+/* ADDED: New Keyframes for Ambient Orb Animations (for PersonalView) */
+/* ================================================= */
+
+/* Keyframes for slow, drifting pulse animation */
+@keyframes pulse-slow {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: scale(1.05) translate(5%, 5%);
+    /* Drifting motion */
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.2;
+  }
+}
+
+/* Reverse keyframes for second orb */
+@keyframes pulse-slow-reverse {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: scale(1.05) translate(-5%, -5%);
+    /* Opposite drifting motion */
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.2;
+  }
+}
+
+/* Tailwind Utility Classes for the Ambient Orb Animations */
+/* These classes are used in the PersonalView component in React */
+.animate-pulse-slow {
+  animation: pulse-slow 20s infinite ease-in-out;
+}
+
+.animate-pulse-slow-reverse {
+  animation: pulse-slow-reverse 20s infinite ease-in-out;
+}

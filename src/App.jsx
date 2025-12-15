@@ -144,11 +144,42 @@ const DailyQuest = () => {
   );
 };
 
+
+// -----------------------------------------------------------------------
+// ADDED/MODIFIED: Container and Item Variants for Staggering
+// -----------------------------------------------------------------------
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1 // Stagger the children's animation by 0.1 seconds
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100
+    }
+  }
+};
+
 // --- Sub-Components ---
 const Card = ({ children, className = "", onClick }) => (
   <motion.div
     onClick={onClick}
-    variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+    // MODIFIED: Use itemVariants for staggering and added interactive effects
+    variants={itemVariants}
+    initial="hidden"
+    animate="visible"
+    whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+    whileTap={{ scale: 0.98 }}
     className={`p-6 rounded-xl border backdrop-blur-md ${className}`}
   >
     {children}
@@ -319,6 +350,9 @@ const Guestbook = () => {
   );
 };
 
+// -----------------------------------------------------------------------
+// MODIFIED: PersonalView (Added page transitions, background animation classes, and staggered container)
+// -----------------------------------------------------------------------
 const PersonalView = ({ onBack }) => {
   const [activeModal, setActiveModal] = useState(null);
   const [constructionId, setConstructionId] = useState(null);
@@ -331,15 +365,22 @@ const PersonalView = ({ onBack }) => {
   return (
     // DARK THEME: "Neon Galaxy" - Deep Purple/Blue Gradient Background
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, x: 50 }} // Page Transition: Slide in
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -50 }} // Page Transition: Slide out
+      transition={{ duration: 0.3 }}
       className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900 via-[#0f0c29] to-black text-neutral-200 p-6 md:p-12 relative overflow-hidden"
     >
       <div className="fixed inset-0 pointer-events-none">
-        {/* Colorful ambient orbs */}
-        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-600/20 rounded-full blur-[120px]" />
+        {/* Colorful ambient orbs - ADDED motion and custom classes (requires custom CSS/Tailwind config) */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+          className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500/20 rounded-full blur-[120px] animate-pulse-slow"
+        />
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
+          className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-600/20 rounded-full blur-[120px] animate-pulse-slow-reverse"
+        />
       </div>
 
       <div className="max-w-4xl mx-auto relative z-10">
@@ -356,7 +397,13 @@ const PersonalView = ({ onBack }) => {
           <p className="text-xl text-indigo-100/80 leading-relaxed font-light">{PERSONAL_DATA.bio}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* MODIFIED: Wrapped Hobby Cards in motion.div for staggered loading */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {PERSONAL_DATA.hobbies.map((h, i) => {
             const isConstruction = constructionId === i;
             const cardClasses = `
@@ -405,7 +452,7 @@ const PersonalView = ({ onBack }) => {
               </Card>
             );
           })}
-        </div>
+        </motion.div>
 
         <DailyQuest />
         <Guestbook />
@@ -424,9 +471,18 @@ const PersonalView = ({ onBack }) => {
   );
 };
 
+// -----------------------------------------------------------------------
+// MODIFIED: DeveloperView (Added consistent page transitions)
+// -----------------------------------------------------------------------
 const DeveloperView = ({ onBack }) => (
   // DARK THEME: "Cyber Matrix" - Black with Neon Green/Cyan
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-black text-white p-6 flex flex-col items-center justify-center relative overflow-hidden">
+  <motion.div
+    initial={{ opacity: 0, x: -50 }} // Page Transition: Slide in
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: 50 }} // Page Transition: Slide out
+    transition={{ duration: 0.3 }}
+    className="min-h-screen bg-black text-white p-6 flex flex-col items-center justify-center relative overflow-hidden"
+  >
     <div className="absolute inset-0 pointer-events-none">
       {/* Tech Grid Background - Matrix Style */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
@@ -459,7 +515,7 @@ const DeveloperView = ({ onBack }) => (
 );
 
 // ==============================================
-// MODIFIED SPLIT LANDING COMPONENT
+// MODIFIED SPLIT LANDING COMPONENT (from previous request)
 // ==============================================
 const SplitLanding = ({ onSelect }) => {
   const [introDone, setIntroDone] = useState(false);
