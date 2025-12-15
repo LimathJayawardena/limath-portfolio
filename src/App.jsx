@@ -330,10 +330,10 @@ const PersonalView = ({ onBack }) => {
 
   return (
     // DARK THEME: "Neon Galaxy" - Deep Purple/Blue Gradient Background
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      exit={{ opacity: 0 }} 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900 via-[#0f0c29] to-black text-neutral-200 p-6 md:p-12 relative overflow-hidden"
     >
       <div className="fixed inset-0 pointer-events-none">
@@ -360,13 +360,13 @@ const PersonalView = ({ onBack }) => {
           {PERSONAL_DATA.hobbies.map((h, i) => {
             const isConstruction = constructionId === i;
             const cardClasses = `
-              h-full relative overflow-hidden group cursor-pointer 
-              transition-all duration-300 ease-out 
-              border border-white/5 bg-white/5 backdrop-blur-sm
-              hover:-translate-y-1 hover:shadow-2xl hover:shadow-pink-500/10 
-              hover:border-pink-500/30 hover:bg-white/10
-              ${isConstruction ? 'border-amber-500/50 bg-amber-900/20' : ''}
-            `;
+              h-full relative overflow-hidden group cursor-pointer 
+              transition-all duration-300 ease-out 
+              border border-white/5 bg-white/5 backdrop-blur-sm
+              hover:-translate-y-1 hover:shadow-2xl hover:shadow-pink-500/10 
+              hover:border-pink-500/30 hover:bg-white/10
+              ${isConstruction ? 'border-amber-500/50 bg-amber-900/20' : ''}
+            `;
 
             const content = (
               <>
@@ -428,7 +428,7 @@ const DeveloperView = ({ onBack }) => (
   // DARK THEME: "Cyber Matrix" - Black with Neon Green/Cyan
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-black text-white p-6 flex flex-col items-center justify-center relative overflow-hidden">
     <div className="absolute inset-0 pointer-events-none">
-       {/* Tech Grid Background - Matrix Style */}
+      {/* Tech Grid Background - Matrix Style */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
       <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px]" />
       <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-[100px]" />
@@ -443,7 +443,7 @@ const DeveloperView = ({ onBack }) => (
 
       {/* Neon Gradient Text */}
       <h1 className="text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-500 drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]">COMING SOON</h1>
-      
+
       <div className="flex items-center justify-center gap-2 text-emerald-500/80 font-mono mb-8 bg-emerald-950/30 px-4 py-2 rounded border border-emerald-500/20">
         <Loader2 className="animate-spin" size={16} /> SYSTEM_UPGRADE_IN_PROGRESS...
       </div>
@@ -458,62 +458,110 @@ const DeveloperView = ({ onBack }) => (
   </motion.div>
 );
 
+// ==============================================
+// MODIFIED SPLIT LANDING COMPONENT
+// ==============================================
 const SplitLanding = ({ onSelect }) => {
   const [introDone, setIntroDone] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setIntroDone(true), 2500);
+    // The total time before the split panels appear is 1.5s
+    setTimeout(() => setIntroDone(true), 1500);
   }, []);
 
+  // Variant for the Glitch Title
+  const titleVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, delay: 1.5 } }
+  };
+
+  // Variant for the Split Panels
+  const panelVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.5, delay: 1.8 } }
+  };
+
   return (
-    <div className="h-screen flex flex-col md:flex-row bg-black relative overflow-hidden">
+    <div className="h-screen flex flex-col bg-black relative overflow-hidden">
+
+      {/* 1. INITIAL PAGE LOAD SCREEN (Flash: Welcome to my portfolio) */}
       <motion.div
-        className="absolute inset-0 flex items-center justify-center z-50 bg-black pointer-events-none"
-        animate={{ y: introDone ? "-100%" : "0%" }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
+        className="fixed inset-0 flex items-center justify-center z-50 bg-black pointer-events-none"
+        animate={{ opacity: introDone ? 0 : 1 }}
+        transition={{ duration: 0.8, delay: 0.7 }}
       >
-        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter text-center px-4">
-          <motion.span initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>Hi, I'm </motion.span>
-          
-          <motion.div 
-            initial={{ opacity: 0, x: 100 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ delay: 0.8 }} 
-            className="glitch-wrapper"
-            style={{ display: 'inline-block' }}
-          >
-            {/* Reverted inline style to default (white) for dark mode */}
-            <span className="glitch" data-text="Limath Jayawardena">Limath Jayawardena</span>
-          </motion.div>
-          
-        </h1>
+        <motion.h1
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-5xl md:text-7xl font-black text-white tracking-tighter text-center"
+        >
+          Welcome to my portfolio
+        </motion.h1>
       </motion.div>
 
-      {/* LEFT: Warm/Human Side (Dark Purple/Pink) */}
-      <div
-        className="flex-1 bg-gradient-to-br from-indigo-950 via-purple-950 to-black border-r border-white/10 flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden"
-        onClick={() => onSelect('personal')}
+      {/* Container for everything else (appears after intro) */}
+      <motion.div
+        className="flex-1 flex flex-col relative z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: introDone ? 1 : 0 }}
+        transition={{ delay: 1.5, duration: 0.5 }}
       >
-        <div className="absolute inset-0 bg-pink-500/0 group-hover:bg-pink-500/10 transition-colors" />
-        <div className="text-center z-10 group-hover:scale-110 transition-transform duration-500">
-          <User size={64} className="mx-auto mb-4 text-pink-300/50 group-hover:text-pink-300 transition-colors shadow-purple-500/50" />
-          <h2 className="text-4xl font-bold text-white mb-2 tracking-wide">PERSONAL</h2>
-          <p className="text-pink-300/50 group-hover:text-pink-200 transition-colors font-light">Life & Hobbies</p>
-        </div>
-      </div>
 
-      {/* RIGHT: Cool/Dev Side (Dark Cyan/Emerald) */}
-      <div
-        className="flex-1 bg-gradient-to-bl from-slate-950 via-[#050505] to-black flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden"
-        onClick={() => onSelect('developer')}
-      >
-        <div className="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/5 transition-colors" />
-        <div className="text-center z-10 group-hover:scale-110 transition-transform duration-500">
-          <Code size={64} className="mx-auto mb-4 text-emerald-500/50 group-hover:text-emerald-400 transition-colors" />
-          <h2 className="text-4xl font-bold text-white font-mono mb-2 tracking-tighter">&lt;DEVELOPER /&gt;</h2>
-          <p className="text-emerald-500/50 group-hover:text-emerald-400/80 transition-colors font-mono text-sm">Code & Projects</p>
+        {/* 2. Top Banner: "Hi, I'm Limath Jayawardena" (with glitch) */}
+        <motion.header
+          className="p-6 bg-neutral-900/50 backdrop-blur-sm border-b border-neutral-700/50 shadow-lg text-center"
+          variants={titleVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter">
+            <span className="mr-2 text-neutral-400">Hi, I'm</span>
+            <span
+              className="glitch-wrapper inline-block"
+              style={{ display: 'inline-block' }}
+            >
+              <span className="glitch text-white" data-text="Limath Jayawardena">Limath Jayawardena</span>
+            </span>
+          </h1>
+        </motion.header>
+
+        {/* 3. Split Panels */}
+        <div className="flex-1 flex flex-col md:flex-row">
+          {/* LEFT: Warm/Human Side (Dark Purple/Pink) */}
+          <motion.div
+            variants={panelVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex-1 bg-gradient-to-br from-indigo-950 via-purple-950 to-black border-r border-white/10 flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden h-1/2 md:h-full"
+            onClick={() => onSelect('personal')}
+          >
+            <div className="absolute inset-0 bg-pink-500/0 group-hover:bg-pink-500/10 transition-colors" />
+            <div className="text-center z-10 group-hover:scale-110 transition-transform duration-500">
+              <User size={64} className="mx-auto mb-4 text-pink-300/50 group-hover:text-pink-300 transition-colors shadow-purple-500/50" />
+              <h2 className="text-4xl font-bold text-white mb-2 tracking-wide">HUMAN</h2> {/* SHORTENED */}
+              <p className="text-pink-300/50 group-hover:text-pink-200 transition-colors font-light">Life & Hobbies</p>
+            </div>
+          </motion.div>
+
+          {/* RIGHT: Cool/Dev Side (Dark Cyan/Emerald) */}
+          <motion.div
+            variants={panelVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex-1 bg-gradient-to-bl from-slate-950 via-[#050505] to-black flex items-center justify-center cursor-pointer group hover:flex-[1.5] transition-all duration-500 relative overflow-hidden h-1/2 md:h-full"
+            onClick={() => onSelect('developer')}
+          >
+            <div className="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/5 transition-colors" />
+            <div className="text-center z-10 group-hover:scale-110 transition-transform duration-500">
+              <Code size={64} className="mx-auto mb-4 text-emerald-500/50 group-hover:text-emerald-400 transition-colors" />
+              <h2 className="text-4xl font-bold text-white font-mono mb-2 tracking-tighter">DEVELOPER</h2> {/* SHORTENED */}
+              <p className="text-emerald-500/50 group-hover:text-emerald-400/80 transition-colors font-mono text-sm">Code & Projects</p>
+            </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
